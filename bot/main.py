@@ -87,7 +87,8 @@ def sem_acento(s):
 def telegram(metodo, **kw):
     url = f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}/{metodo}"
     r = requests.post(url, timeout=60, **kw)
-    r.raise_for_status()
+    if not r.ok:
+        raise RuntimeError(f"Telegram {metodo} recusou: {r.status_code} {r.text[:300]}")
     return r.json()
 
 
@@ -388,11 +389,14 @@ def baixar_url(url, destino):
 
 # ---------- textos verificados (Wikisource) ----------
 
-def wikisource(lang, busca):
+def wikisource(lang, busca, autor=""):
     api = f"https://{lang}.wikisource.org/w/api.php"
     achados = requests.get(api, headers=UA, timeout=30, params={
         "action": "query", "list": "search", "srsearch": busca, "srlimit": 3, "format": "json"}).json()
     for hit in achados.get("query", {}).get("search", []):
+        t_hit = norm(hit["title"].split(":", 1)[-1])
+        if autor and t_hit == norm(autor):
+            continue  # página do autor (biografia/lista de obras), não a obra
         p = requests.get(api, headers=UA, timeout=30, params={
             "action": "parse", "page": hit["title"], "prop": "text",
             "format": "json", "formatversion": 2}).json()
@@ -437,7 +441,7 @@ def post_com_fonte(autor, tipo):
     plano = claude(f"Escolha {o_que} de {autor['nome']} que esteja no Wikisource, na língua original.\n"
                    'Responda: {"lang":"código do Wikisource (en, de, fr, it, es, pt, la, ja...)",'
                    '"busca":"termos para achar a página no Wikisource"}')
-    achado = wikisource(plano["lang"], plano["busca"])
+    achado = wikisource(plano["lang"], plano["busca"], autor["nome"])
     if not achado:
         DIAGNOSTICO.append(f"{autor['nome']}: nada no Wikisource ({plano['lang']}) para '{plano['busca']}'")
         return None
@@ -446,10 +450,17 @@ def post_com_fonte(autor, tipo):
         dados = claude(
             f"Fonte: Wikisource ({plano['lang']}), página '{titulo}', de {autor['nome']}:\n<<<\n{fonte}\n>>>\n"
             "Escolha um trecho de 2 a 8 linhas copiado EXATAMENTE da fonte acima, sem alterar nada. "
+            "O trecho tem de ser versos ou prosa escritos pelo autor: nunca cabeçalho da página, "
+            "título, datas, dados biográficos, notas ou índice. Se a fonte não tiver texto literário, "
+            'responda {"trecho_original":"","texto":"","busca_imagem":""}. '"
             "Monte o post: o trecho original, a tradução (se necessária) e de 2 a 4 frases de contexto.\n"
             'Responda: {"trecho_original":"...","texto":"post completo contendo o trecho original '
             'idêntico","busca_imagem":"2 ou 3 palavras em inglês para achar uma obra de museu '
             'de até 1910 com o mesmo clima"}', max_tokens=8000)
+        trecho = dados.get("trecho_original", "")
+        if not trecho.strip() or re.search(r"[†*]", trecho):
+            DIAGNOSTICO.append(f"{autor['nome']}: fonte '{titulo}' sem trecho literário utilizável")
+            return None
         if trecho_confere(dados["trecho_original"], fonte) and \
                 norm(dados["trecho_original"]) in norm(dados["texto"]):
             return {"texto": dados["texto"], "imagem": imagem_por_tema(dados["busca_imagem"]),

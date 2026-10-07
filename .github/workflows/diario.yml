@@ -47,3 +47,9 @@ jobs:
 
       - name: Enviar ao Telegram
         run: python bot/main.py enviar
+
+      - name: Salvar diagnóstico
+        if: always()
+        run: |
+          git add bot
+          git diff --cached --quiet || (git commit -m "diagnóstico" && git pull --rebase && git push)
