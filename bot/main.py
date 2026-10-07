@@ -228,7 +228,8 @@ def met_busca(params, filtro):
                          headers=UA, timeout=30).json()
         if (o.get("isPublicDomain") and o.get("primaryImage")
                 and (o.get("objectEndDate") or 9999) <= ANO_LIMITE and filtro(o)):
-            return {"url": o["primaryImage"], "titulo": o.get("title"),
+            return {"url": o["primaryImage"], "url_menor": o.get("primaryImageSmall"),
+                    "titulo": o.get("title"),
                     "artista": o.get("artistDisplayName") or "autor desconhecido",
                     "data": o.get("objectDate"), "museu": "The Metropolitan Museum of Art, Nova York"}
     return None
@@ -242,6 +243,7 @@ def aic_busca(q, filtro):
         if (o.get("is_public_domain") and o.get("image_id")
                 and (o.get("date_end") or 9999) <= ANO_LIMITE and filtro(o)):
             return {"url": f"https://www.artic.edu/iiif/2/{o['image_id']}/full/1686,/0/default.jpg",
+                    "url_menor": f"https://www.artic.edu/iiif/2/{o['image_id']}/full/843,/0/default.jpg",
                     "titulo": o.get("title"), "artista": o.get("artist_title") or "autor desconhecido",
                     "data": o.get("date_display"), "museu": "Art Institute of Chicago"}
     return None
@@ -262,8 +264,25 @@ def imagem_por_tema(busca):
             or met_busca({"q": "landscape painting", "hasImages": "true"}, lambda o: True))
 
 
-def baixar_imagem(url, destino):
-    r = requests.get(url, headers=UA, timeout=120)
+NAVEGADOR = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                           "Chrome/126.0 Safari/537.36", "Accept": "image/avif,image/webp,image/*,*/*"}
+
+
+def baixar_imagem(imagem, destino):
+    """Tenta a imagem grande, depois a menor; registra no diagnóstico o que falhar."""
+    for url in [imagem.get("url"), imagem.get("url_menor")]:
+        if not url:
+            continue
+        try:
+            baixar_url(url, destino)
+            return True
+        except Exception as e:
+            DIAGNOSTICO.append(f"download da imagem falhou ({url[:80]}): {type(e).__name__}: {str(e)[:150]}")
+    return False
+
+
+def baixar_url(url, destino):
+    r = requests.get(url, headers=NAVEGADOR, timeout=120)
     r.raise_for_status()
     img = Image.open(io.BytesIO(r.content)).convert("RGB")
     img.thumbnail((2048, 2048))
@@ -418,7 +437,11 @@ def gerar():
 
     pid = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M")
     POSTS.mkdir(parents=True, exist_ok=True)
-    baixar_imagem(post["imagem"]["url"], POSTS / f"{pid}.jpg")
+    if not baixar_imagem(post["imagem"], POSTS / f"{pid}.jpg"):
+        reserva = aic_busca("landscape", lambda o: True)
+        if not (reserva and baixar_imagem(reserva, POSTS / f"{pid}.jpg")):
+            raise RuntimeError("nenhuma imagem pôde ser baixada")
+        post["imagem"], post["credito"] = reserva, True
 
     texto = post["texto"].strip()
     if post["credito"]:
@@ -450,4 +473,18 @@ def enviar():
 
 
 if __name__ == "__main__":
-    {"gerar": gerar, "enviar": enviar}[sys.argv[1]]()
+    import traceback
+    try:
+        {"gerar": gerar, "enviar": enviar}[sys.argv[1]]()
+    except SystemExit:
+        raise
+    except Exception:
+        erro = traceback.format_exc()
+        print(erro)
+        (RAIZ / "bot" / "ultimo_diagnostico.txt").write_text(
+            f"{sys.argv[1]} falhou\n" + "\n".join(DIAGNOSTICO) + "\n\n" + erro, encoding="utf-8")
+        try:
+            avisar(f"O bot falhou ({sys.argv[1]}):\n" + erro[-1500:])
+        except Exception:
+            pass
+        sys.exit(1)
