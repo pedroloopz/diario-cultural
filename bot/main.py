@@ -23,7 +23,7 @@ AUTORES = RAIZ / "bot" / "autores.json"
 ESTADO = RAIZ / "bot" / "estado.json"
 POSTS = RAIZ / "docs" / "posts"
 
-MODELO = "claude-sonnet-5-5"
+MODELO = "claude-opus-5-5"  # melhor qualidade; troque por "claude-sonnet-5-5" para gastar menos
 UA = {"User-Agent": "diario-cultural-bot/1.0 (projeto pessoal; github)"}
 
 # Ordem dos posts: cada execução pega a próxima categoria.
@@ -92,7 +92,7 @@ def avisar(texto):
     telegram("sendMessage", data={"chat_id": os.environ["TELEGRAM_CHAT_ID"], "text": texto})
 
 
-def claude(pedido, max_tokens=2000):
+def claude(pedido, max_tokens=8000):
     r = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={"x-api-key": os.environ["ANTHROPIC_API_KEY"],
@@ -178,7 +178,7 @@ def repor(autores, area):
         f"1955, de países e épocas variados (da Antiguidade a 1910). Cerca de 70% pouco conhecidos do público geral e 30% famosos. Não repita nenhum "
         f"destes: {', '.join(sorted(existentes))}. "
         'Responda: {"autores":[{"nome":"nome como aparece na Wikipedia em inglês","famoso":true}]}',
-        max_tokens=2500,
+        max_tokens=8000,
     )
     novos = []
     for c in pedido.get("autores", []):
@@ -326,7 +326,7 @@ def post_com_fonte(autor, tipo):
             "Monte o post: o trecho original, a tradução (se necessária) e de 2 a 4 frases de contexto.\n"
             'Responda: {"trecho_original":"...","texto":"post completo contendo o trecho original '
             'idêntico","busca_imagem":"2 ou 3 palavras em inglês para achar uma obra de museu '
-            'de até 1910 com o mesmo clima"}', max_tokens=2500)
+            'de até 1910 com o mesmo clima"}', max_tokens=8000)
         if trecho_confere(dados["trecho_original"], fonte) and \
                 norm(dados["trecho_original"]) in norm(dados["texto"]):
             return {"texto": dados["texto"], "imagem": imagem_por_tema(dados["busca_imagem"]),
