@@ -16,6 +16,7 @@ import sys
 import unicodedata
 
 import requests
+from urllib.parse import quote
 from PIL import Image
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
@@ -24,7 +25,7 @@ ESTADO = RAIZ / "bot" / "estado.json"
 POSTS = RAIZ / "docs" / "posts"
 
 MODELO = "claude-opus-5-5"  # melhor qualidade; troque por "claude-sonnet-5-5" para gastar menos
-UA = {"User-Agent": "diario-cultural-bot/1.0 (projeto pessoal; github)"}
+UA = {"User-Agent": "diario-cultural-bot/1.0 (https://github.com/pedroloopz/diario-cultural)"}
 
 # Ordem dos posts: cada execução pega a próxima categoria.
 DIAGNOSTICO = []  # registra o que deu errado em cada execução
@@ -218,6 +219,91 @@ def processar_comandos(estado, autores):
                     avisar(f"{a['nome']} saiu do rodízio.")
 
 
+# ---------- imagens via Wikidata/Wikimedia Commons (fonte principal) ----------
+
+WD_API = "https://www.wikidata.org/w/api.php"
+
+
+def wd_entidades(ids, props="claims|labels"):
+    ids = [i for i in ids if i]
+    if not ids:
+        return {}
+    r = requests.get(WD_API, headers=UA, timeout=30, params={
+        "action": "wbgetentities", "ids": "|".join(ids[:50]), "props": props,
+        "languages": "pt|en", "format": "json"}).json()
+    return r.get("entities", {})
+
+
+def wd_busca(texto, limite=30):
+    r = requests.get(WD_API, headers=UA, timeout=30, params={
+        "action": "query", "list": "search", "srsearch": texto, "srnamespace": 0,
+        "srlimit": limite, "format": "json"}).json()
+    return [h["title"] for h in r.get("query", {}).get("search", [])]
+
+
+def rotulo(ent):
+    l = ent.get("labels", {})
+    return (l.get("pt") or l.get("en") or {}).get("value")
+
+
+def wd_valor(claims, prop):
+    for c in claims.get(prop, []):
+        v = c["mainsnak"].get("datavalue", {}).get("value")
+        if v:
+            return v
+    return None
+
+
+def wd_pessoa(nome):
+    busca = requests.get(WD_API, headers=UA, timeout=30, params={
+        "action": "wbsearchentities", "search": nome, "language": "en",
+        "type": "item", "limit": 5, "format": "json"}).json()
+    ids = [i["id"] for i in busca.get("search", [])]
+    for qid, ent in wd_entidades(ids, "claims").items():
+        p31 = [c["mainsnak"].get("datavalue", {}).get("value", {}).get("id")
+               for c in ent.get("claims", {}).get("P31", [])]
+        if "Q5" in p31:
+            return qid
+    return None
+
+
+def wd_pintura(ent, artista=None):
+    c = ent.get("claims", {})
+    arquivo = wd_valor(c, "P18")
+    if not arquivo:
+        return None
+    ano = ano_wikidata(c, "P571")
+    if ano and ano > ANO_LIMITE:
+        return None
+    criador = (wd_valor(c, "P170") or {}).get("id")
+    colecao = (wd_valor(c, "P195") or {}).get("id")
+    nomes = wd_entidades([i for i in (criador, colecao) if i and not (i == criador and artista)], "labels")
+    base = "https://commons.wikimedia.org/wiki/Special:FilePath/" + quote(arquivo.replace(" ", "_"))
+    return {"url": base + "?width=2048", "url_menor": base + "?width=1024",
+            "titulo": rotulo(ent) or "sem título",
+            "artista": artista or rotulo(nomes.get(criador, {})) or "autor desconhecido",
+            "data": str(ano) if ano else "data não informada",
+            "museu": rotulo(nomes.get(colecao, {})) or "Wikimedia Commons"}
+
+
+def wd_pinturas(consulta, artista=None):
+    ids = wd_busca(f"{consulta} haswbstatement:P31=Q3305213 haswbstatement:P18")
+    random.shuffle(ids)
+    for qid, ent in wd_entidades(ids[:20]).items():
+        obra = wd_pintura(ent, artista)
+        if obra:
+            return obra
+    return None
+
+
+def tentar(funcao, *args):
+    try:
+        return funcao(*args)
+    except Exception as e:
+        DIAGNOSTICO.append(f"{funcao.__name__} falhou: {type(e).__name__}: {str(e)[:150]}")
+        return None
+
+
 # ---------- imagens (domínio público) ----------
 
 def met_busca(params, filtro):
@@ -250,6 +336,15 @@ def aic_busca(q, filtro):
 
 
 def obra_do_pintor(nome):
+    qid = tentar(wd_pessoa, nome)
+    if qid:
+        obra = tentar(wd_pinturas, f"haswbstatement:P170={qid}", nome)
+        if obra:
+            return obra
+    return tentar(obra_do_pintor_museus, nome)
+
+
+def obra_do_pintor_museus(nome):
     sobrenome = sem_acento(nome).split()[-1]
     return (met_busca({"q": nome, "artistOrCulture": "true", "hasImages": "true"},
                       lambda o: o.get("classification") == "Paintings"
@@ -259,9 +354,11 @@ def obra_do_pintor(nome):
 
 
 def imagem_por_tema(busca):
-    return (met_busca({"q": busca, "hasImages": "true"}, lambda o: True)
-            or aic_busca(busca, lambda o: True)
-            or met_busca({"q": "landscape painting", "hasImages": "true"}, lambda o: True))
+    return (tentar(wd_pinturas, busca)
+            or tentar(wd_pinturas, busca.split()[0] if busca.split() else "landscape")
+            or tentar(wd_pinturas, "landscape")
+            or tentar(met_busca, {"q": busca, "hasImages": "true"}, lambda o: True)
+            or tentar(aic_busca, busca, lambda o: True))
 
 
 NAVEGADOR = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -282,7 +379,7 @@ def baixar_imagem(imagem, destino):
 
 
 def baixar_url(url, destino):
-    r = requests.get(url, headers=NAVEGADOR, timeout=120)
+    r = requests.get(url, headers=UA if "wiki" in url else NAVEGADOR, timeout=120)
     r.raise_for_status()
     img = Image.open(io.BytesIO(r.content)).convert("RGB")
     img.thumbnail((2048, 2048))
@@ -438,7 +535,7 @@ def gerar():
     pid = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M")
     POSTS.mkdir(parents=True, exist_ok=True)
     if not baixar_imagem(post["imagem"], POSTS / f"{pid}.jpg"):
-        reserva = aic_busca("landscape", lambda o: True)
+        reserva = tentar(wd_pinturas, "landscape")
         if not (reserva and baixar_imagem(reserva, POSTS / f"{pid}.jpg")):
             raise RuntimeError("nenhuma imagem pôde ser baixada")
         post["imagem"], post["credito"] = reserva, True
