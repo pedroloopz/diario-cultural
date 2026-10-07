@@ -27,6 +27,8 @@ MODELO = "claude-opus-5-5"  # melhor qualidade; troque por "claude-sonnet-5-5" p
 UA = {"User-Agent": "diario-cultural-bot/1.0 (projeto pessoal; github)"}
 
 # Ordem dos posts: cada execução pega a próxima categoria.
+DIAGNOSTICO = []  # registra o que deu errado em cada execução
+
 CICLO = ["pintura", "poema", "musica", "diario", "teoria", "movimento", "esquecido"]
 AREA_DA_CATEGORIA = {"pintura": "pintura", "movimento": "pintura", "poema": "poesia",
                      "musica": "musica", "diario": "diario", "teoria": "teoria"}
@@ -125,7 +127,10 @@ def disponiveis(autores, area, hoje):
 def escolher(autores, area, hoje, so_desconhecidos=False, evitar=()):
     disp = [a for a in disponiveis(autores, area, hoje) if a["nome"] not in evitar]
     if len(disp) < MINIMO_DISPONIVEIS:
-        repor(autores, area)
+        try:
+            repor(autores, area)
+        except Exception as e:
+            DIAGNOSTICO.append(f"reposição de autores em {area} falhou: {type(e).__name__}: {str(e)[:200]}")
         disp = [a for a in disponiveis(autores, area, hoje) if a["nome"] not in evitar]
     famosos = [a for a in disp if a["famoso"]]
     obscuros = [a for a in disp if not a["famoso"]]
@@ -297,6 +302,7 @@ def trecho_confere(trecho, fonte):
 def post_pintura(autor, movimento=False):
     obra = obra_do_pintor(autor["nome"])
     if not obra:
+        DIAGNOSTICO.append(f"{autor['nome']}: nenhuma pintura em domínio público no Met nem no AIC")
         return None
     foco = ("Escreva sobre o movimento ou escola artística a que o pintor pertence, usando esta obra "
             "como exemplo concreto do que o movimento buscava."
@@ -317,6 +323,7 @@ def post_com_fonte(autor, tipo):
                    '"busca":"termos para achar a página no Wikisource"}')
     achado = wikisource(plano["lang"], plano["busca"])
     if not achado:
+        DIAGNOSTICO.append(f"{autor['nome']}: nada no Wikisource ({plano['lang']}) para '{plano['busca']}'")
         return None
     titulo, fonte = achado
     for _ in range(2):
@@ -331,6 +338,7 @@ def post_com_fonte(autor, tipo):
                 norm(dados["trecho_original"]) in norm(dados["texto"]):
             return {"texto": dados["texto"], "imagem": imagem_por_tema(dados["busca_imagem"]),
                     "credito": True}
+    DIAGNOSTICO.append(f"{autor['nome']}: trecho não conferiu com a fonte '{titulo}'")
     return None
 
 
@@ -375,7 +383,12 @@ def montar(categoria, autores, hoje):
                 post = post_teoria(autor)
         except Exception as e:  # um autor problemático não derruba a execução
             print(f"Falhou com {autor['nome']}: {e}")
+            DIAGNOSTICO.append(f"{autor['nome']}: erro {type(e).__name__}: {str(e)[:300]}")
             post = None
+        if post and not post.get("imagem"):
+            DIAGNOSTICO.append(f"{autor['nome']}: texto pronto, mas nenhuma imagem encontrada")
+        if post and len(post.get("texto", "")) > 3000:
+            DIAGNOSTICO.append(f"{autor['nome']}: texto longo demais ({len(post['texto'])} caracteres)")
         if post and post.get("imagem") and len(post["texto"]) <= 3000:
             registrar_uso(autor, hoje)
             return post
@@ -394,9 +407,13 @@ def gerar():
     estado["proxima"] = estado.get("proxima", 0) + 1
 
     post = montar(categoria, autores, hoje) or montar("pintura", autores, hoje)
+    (RAIZ / "bot" / "ultimo_diagnostico.txt").write_text(
+        f"{datetime.datetime.now(datetime.timezone.utc).isoformat()} categoria={categoria}\n"
+        + "\n".join(DIAGNOSTICO), encoding="utf-8")
     if not post:
         gravar(AUTORES, autores)
         gravar(ESTADO, estado)
+        avisar("O post desta execução falhou:\n" + "\n".join(DIAGNOSTICO[-8:]))
         sys.exit("Nenhum post gerado nesta execução.")
 
     pid = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M")
