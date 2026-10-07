@@ -452,7 +452,7 @@ def post_com_fonte(autor, tipo):
             "Escolha um trecho de 2 a 8 linhas copiado EXATAMENTE da fonte acima, sem alterar nada. "
             "O trecho tem de ser versos ou prosa escritos pelo autor: nunca cabeçalho da página, "
             "título, datas, dados biográficos, notas ou índice. Se a fonte não tiver texto literário, "
-            'responda {"trecho_original":"","texto":"","busca_imagem":""}. '"
+            'responda {"trecho_original":"","texto":"","busca_imagem":""}. '
             "Monte o post: o trecho original, a tradução (se necessária) e de 2 a 4 frases de contexto.\n"
             'Responda: {"trecho_original":"...","texto":"post completo contendo o trecho original '
             'idêntico","busca_imagem":"2 ou 3 palavras em inglês para achar uma obra de museu '
