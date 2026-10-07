@@ -1,1 +1,11 @@
-2026-10-07T02:43:22.571169+00:00 categoria=musica
+enviar falhou
+
+
+Traceback (most recent call last):
+  File "/home/runner/work/diario-cultural/diario-cultural/bot/main.py", line 586, in <module>
+    {"gerar": gerar, "enviar": enviar}[sys.argv[1]]()
+  File "/home/runner/work/diario-cultural/diario-cultural/bot/main.py", line 574, in enviar
+    telegram("sendMessage", data={"chat_id": chat, "parse_mode": "HTML",
+  File "/home/runner/work/diario-cultural/diario-cultural/bot/main.py", line 91, in telegram
+    raise RuntimeError(f"Telegram {metodo} recusou: {r.status_code} {r.text[:300]}")
+RuntimeError: Telegram sendMessage recusou: 400 {"ok":false,"error_code":400,"description":"Bad Request: chat not found"}
