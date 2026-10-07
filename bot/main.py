@@ -209,6 +209,10 @@ def processar_comandos(estado, autores):
     for u in r.get("result", []):
         estado["offset"] = u["update_id"] + 1
         m = u.get("message") or u.get("channel_post") or {}
+        ch = m.get("chat", {})
+        if ch:
+            DIAGNOSTICO.append(f"chat visto: id={ch.get('id')} tipo={ch.get('type')} "
+                               f"nome={ch.get('title') or ch.get('first_name') or ''}")
         if str(m.get("chat", {}).get("id")) != str(os.environ["TELEGRAM_CHAT_ID"]):
             continue
         texto = (m.get("text") or "").strip()
