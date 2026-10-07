@@ -1,0 +1,570 @@
+[
+  {
+    "nome": "Adam Elsheimer",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Georges de La Tour",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Hercules Segers",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Clara Peeters",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Rachel Ruysch",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Juan Sánchez Cotán",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Caspar Wolf",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Judith Leyster",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Johannes Vermeer",
+    "area": "pintura",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Caravaggio",
+    "area": "pintura",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Rembrandt",
+    "area": "pintura",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Louise Labé",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Gaspara Stampa",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Andreas Gryphius",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Henry Vaughan",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Izumi Shikibu",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Gregório de Matos",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Tomás Antônio Gonzaga",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "William Shakespeare",
+    "area": "poesia",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Luís de Camões",
+    "area": "poesia",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Matsuo Bashō",
+    "area": "poesia",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Hafez",
+    "area": "poesia",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Sugawara no Takasue no musume",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Anne Clifford",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "John Evelyn",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Frances Burney",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Georg Christoph Lichtenberg",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Sei Shōnagon",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Samuel Pepys",
+    "area": "diario",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Marcus Aurelius",
+    "area": "diario",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Jean-Jacques Rousseau",
+    "area": "diario",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Barbara Strozzi",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Heinrich Ignaz Franz Biber",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Jan Dismas Zelenka",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Marin Marais",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Élisabeth Jacquet de La Guerre",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Carlo Gesualdo",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "John Dowland",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Joseph Bologne, Chevalier de Saint-Georges",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Johann Sebastian Bach",
+    "area": "musica",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Wolfgang Amadeus Mozart",
+    "area": "musica",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Antonio Vivaldi",
+    "area": "musica",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Pseudo-Longinus",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Nicolas Boileau-Despréaux",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Philip Sidney",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Edmund Burke",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Gotthold Ephraim Lessing",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Giambattista Vico",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Johann Gottfried Herder",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Aristotle",
+    "area": "teoria",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Horace",
+    "area": "teoria",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Richard Wagner",
+    "area": "musica",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Carl Maria von Weber",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Robert Schumann",
+    "area": "musica",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Heinrich Marschner",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Peter Cornelius",
+    "area": "musica",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Joseph von Eichendorff",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Ludwig Uhland",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Theodor Körner",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Ernst Moritz Arndt",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Novalis",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Friedrich Hölderlin",
+    "area": "poesia",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Caspar David Friedrich",
+    "area": "pintura",
+    "famoso": true,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Philipp Otto Runge",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Carl Blechen",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Moritz von Schwind",
+    "area": "pintura",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Friedrich Schlegel",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Johann Gottlieb Fichte",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Jacob Grimm",
+    "area": "teoria",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Cosima Wagner",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  },
+  {
+    "nome": "Bettina von Arnim",
+    "area": "diario",
+    "famoso": false,
+    "usos": 0,
+    "descanso_ate": null,
+    "aprovado": true
+  }
+]

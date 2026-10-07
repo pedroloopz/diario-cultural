@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Enviar ao X</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parede: #D5DBDF;
+    --tinta: #1F262B;
+    --tinta-suave: #4E5960;
+    --folha: #EEF1F2;
+    --ouro: #A8833A;
+    --ouro-escuro: #7A5E26;
+    --sombra: rgba(31, 38, 43, .28);
+    color-scheme: light dark;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --parede: #1C262D;
+      --tinta: #E4E8EA;
+      --tinta-suave: #A3AEB4;
+      --folha: #243139;
+      --ouro: #C29A4C;
+      --ouro-escuro: #E0BE78;
+      --sombra: rgba(0, 0, 0, .5);
+    }
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html, body { margin: 0; background: var(--parede); color: var(--tinta); }
+  body { font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 34rem; margin: 0 auto; padding: 1.5rem 1.25rem 7rem; }
+
+  .moldura {
+    margin: 0 0 1.75rem;
+    padding: 10px;
+    background:
+      linear-gradient(135deg, #D9BC72 0%, var(--ouro) 35%, #6F5420 55%, var(--ouro) 75%, #E2C784 100%);
+    box-shadow: 0 14px 30px var(--sombra), inset 0 0 0 1px rgba(255, 255, 255, .25);
+  }
+  .moldura > div { background: #111; padding: 4px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .6); }
+  .moldura img { display: block; width: 100%; height: auto; min-height: 8rem; background: #222; }
+
+  label { display: block; font-size: .875rem; color: var(--tinta-suave); margin: 0 0 .4rem; }
+  textarea {
+    width: 100%; min-height: 18rem; resize: vertical;
+    padding: 1rem 1.1rem; border: 1px solid color-mix(in srgb, var(--tinta) 18%, transparent);
+    background: var(--folha); color: var(--tinta);
+    font: 1.15rem/1.6 "EB Garamond", Garamond, "Times New Roman", serif;
+  }
+  textarea:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
+  .contador { text-align: right; font-size: .8rem; color: var(--tinta-suave); margin: .3rem 0 0; }
+
+  .acao {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    padding: .9rem 1.25rem calc(.9rem + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--parede) 88%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .acao button { display: block; width: 100%; max-width: 34rem; margin: 0 auto; }
+  button, .botao {
+    appearance: none; border: 0; cursor: pointer; text-decoration: none; text-align: center;
+    font: 600 1.05rem/1 system-ui, sans-serif; padding: 1rem 1.2rem;
+    background: var(--tinta); color: var(--parede);
+  }
+  button:disabled { opacity: .45; cursor: default; }
+  .secundario { background: transparent; color: var(--tinta); border: 1px solid var(--tinta); font-weight: 500; }
+
+  .aviso { margin: 1.25rem 0 0; padding: .9rem 1rem; border-left: 3px solid var(--ouro); background: var(--folha); }
+  .aviso p { margin: 0; }
+  .alternativa { display: grid; gap: .6rem; margin-top: 1rem; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: no-preference) { button { transition: opacity .15s; } }
+</style>
+</head>
+<body>
+<main>
+  <figure class="moldura"><div><img id="imagem" alt="Imagem do post"></div></figure>
+
+  <label for="texto">Texto do post. Edite antes de enviar.</label>
+  <textarea id="texto" spellcheck="true"></textarea>
+  <p class="contador" id="contador"></p>
+
+  <div class="aviso" id="aviso" hidden><p id="mensagem"></p></div>
+
+  <div class="alternativa" id="alternativa" hidden>
+    <button class="secundario" id="copiar" type="button">Copiar texto</button>
+    <a class="botao secundario" id="baixar" download>Salvar imagem</a>
+    <a class="botao secundario" id="abrirX" target="_blank" rel="noopener">Abrir o X com o texto</a>
+  </div>
+</main>
+
+<div class="acao"><button id="enviar" type="button" disabled>Carregando…</button></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const id = new URLSearchParams(location.search).get("id");
+let arquivo = null;
+
+function avisar(texto) { $("mensagem").textContent = texto; $("aviso").hidden = false; }
+function contar() { $("contador").textContent = $("texto").value.length + " caracteres"; }
+function podeCompartilhar() {
+  return arquivo && navigator.canShare && navigator.canShare({ files: [arquivo], text: "x" });
+}
+function mostrarAlternativa() {
+  $("abrirX").href = "https://x.com/intent/post?text=" + encodeURIComponent($("texto").value);
+  $("alternativa").hidden = false;
+}
+
+async function carregar() {
+  if (!/^[0-9-]+$/.test(id || "")) { avisar("Link sem identificação do post. Abra pelo botão no Telegram."); return; }
+  try {
+    const r = await fetch(`posts/${id}.json?v=${Date.now()}`);
+    if (!r.ok) throw new Error();
+    const post = await r.json();
+    $("texto").value = post.texto; contar();
+    $("imagem").src = `posts/${post.imagem}`;
+    $("baixar").href = `posts/${post.imagem}`;
+    const blob = await (await fetch(`posts/${post.imagem}`)).blob();
+    arquivo = new File([blob], post.imagem, { type: "image/jpeg" });
+    $("enviar").disabled = false;
+    $("enviar").textContent = "Enviar ao X";
+    if (!podeCompartilhar()) {
+      avisar("Este navegador não envia imagem e texto juntos. No menu ⋮ da página, abra no Chrome, ou use as opções abaixo.");
+      mostrarAlternativa();
+    }
+  } catch {
+    $("enviar").textContent = "Post indisponível";
+    avisar("O post ainda não foi publicado. Espere um minuto e abra o link de novo.");
+  }
+}
+
+$("texto").addEventListener("input", contar);
+
+$("enviar").addEventListener("click", async () => {
+  const texto = $("texto").value;
+  try { await navigator.clipboard.writeText(texto); } catch {}
+  if (!podeCompartilhar()) { mostrarAlternativa(); return; }
+  try {
+    await navigator.share({ files: [arquivo], text: texto });
+    avisar("Enviado ao X. Se o texto não apareceu lá, ele já está copiado: toque e segure no campo e escolha Colar.");
+  } catch (e) {
+    if (e.name !== "AbortError") { avisar("Não foi possível abrir o X. Use as opções abaixo."); mostrarAlternativa(); }
+  }
+});
+
+$("copiar").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("texto").value); avisar("Texto copiado."); }
+  catch { $("texto").select(); avisar("Selecione o texto e copie manualmente."); }
+});
+
+carregar();
+</script>
+</body>
+</html>
