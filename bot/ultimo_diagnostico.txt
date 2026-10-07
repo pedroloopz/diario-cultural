@@ -1,12 +1,1 @@
-gerar falhou
-download da imagem falhou (https://www.artic.edu/iiif/2/2b9bef7f-d495-24e9-e856-8db0be2827b4/full/1686,/0/d): HTTPError: 403 Client Error: Forbidden for url: https://www.artic.edu/iiif/2/2b9bef7f-d495-24e9-e856-8db0be2827b4/full/1686,/0/default.jpg
-download da imagem falhou (https://www.artic.edu/iiif/2/2b9bef7f-d495-24e9-e856-8db0be2827b4/full/843,/0/de): HTTPError: 403 Client Error: Forbidden for url: https://www.artic.edu/iiif/2/2b9bef7f-d495-24e9-e856-8db0be2827b4/full/843,/0/default.jpg
-download da imagem falhou (https://www.artic.edu/iiif/2/1e452e34-3a2b-0dca-35c3-c7236c612985/full/1686,/0/d): HTTPError: 403 Client Error: Forbidden for url: https://www.artic.edu/iiif/2/1e452e34-3a2b-0dca-35c3-c7236c612985/full/1686,/0/default.jpg
-download da imagem falhou (https://www.artic.edu/iiif/2/1e452e34-3a2b-0dca-35c3-c7236c612985/full/843,/0/de): HTTPError: 403 Client Error: Forbidden for url: https://www.artic.edu/iiif/2/1e452e34-3a2b-0dca-35c3-c7236c612985/full/843,/0/default.jpg
-
-Traceback (most recent call last):
-  File "/home/runner/work/diario-cultural/diario-cultural/bot/main.py", line 478, in <module>
-    {"gerar": gerar, "enviar": enviar}[sys.argv[1]]()
-  File "/home/runner/work/diario-cultural/diario-cultural/bot/main.py", line 443, in gerar
-    raise RuntimeError("nenhuma imagem pôde ser baixada")
-RuntimeError: nenhuma imagem pôde ser baixada
+2026-10-07T02:39:54.828517+00:00 categoria=poema
