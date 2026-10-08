@@ -395,7 +395,7 @@
     "nome": "Aristotle",
     "area": "teoria",
     "famoso": true,
-    "usos": 0,
+    "usos": 1,
     "descanso_ate": null,
     "aprovado": true
   },
