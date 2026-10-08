@@ -84,12 +84,27 @@ def sem_acento(s):
     return norm("".join(c for c in s if not unicodedata.combining(c)))
 
 
-def telegram(metodo, **kw):
+def telegram(metodo, tentativas=3, **kw):
+    """Chama a API do Telegram. Lentidão ou erro 5xx/429 tenta de novo (o Telegram às vezes demora)."""
+    import time
+
     url = f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}/{metodo}"
-    r = requests.post(url, timeout=60, **kw)
-    if not r.ok:
+    for n in range(1, tentativas + 1):
+        for f in (kw.get("files") or {}).values():
+            f.seek(0)  # arquivo de imagem: volta ao início antes de reenviar
+        try:
+            r = requests.post(url, timeout=60, **kw)
+        except requests.exceptions.RequestException as erro:
+            if n == tentativas:
+                raise RuntimeError(f"Telegram {metodo} não respondeu: {erro}") from erro
+            time.sleep(5 * n)
+            continue
+        if r.ok:
+            return r.json()
+        if n < tentativas and (r.status_code == 429 or r.status_code >= 500):
+            time.sleep(5 * n)
+            continue
         raise RuntimeError(f"Telegram {metodo} recusou: {r.status_code} {r.text[:300]}")
-    return r.json()
 
 
 def avisar(texto):
@@ -204,8 +219,12 @@ def repor(autores, area):
 
 
 def processar_comandos(estado, autores):
-    r = requests.get(f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}/getUpdates",
-                     params={"offset": estado.get("offset", 0), "timeout": 0}, timeout=30).json()
+    """Lê os comandos mandados ao bot (/remover). Se o Telegram falhar, o post sai mesmo assim."""
+    try:
+        r = telegram("getUpdates", data={"offset": estado.get("offset", 0), "timeout": 0})
+    except Exception as erro:
+        DIAGNOSTICO.append(f"comandos do Telegram não lidos nesta execução: {erro}")
+        return
     for u in r.get("result", []):
         estado["offset"] = u["update_id"] + 1
         m = u.get("message") or u.get("channel_post") or {}
