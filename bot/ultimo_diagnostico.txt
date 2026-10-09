@@ -1,1 +1,11 @@
-2026-10-09T00:45:43.439493+00:00 categoria=movimento
+2026-10-09T16:49:24.410844+00:00 categoria=esquecido
+Sugawara no Takasue no musume: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Sei Shōnagon: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Cosima Wagner: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Frances Burney: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Anne Clifford: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Johannes Vermeer: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Philipp Otto Runge: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Caspar David Friedrich: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Caravaggio: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Georges de La Tour: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
