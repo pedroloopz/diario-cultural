@@ -1,3 +1,2 @@
-2026-10-10T20:36:03.480123+00:00 categoria=teoria
-PAUSADO: os créditos da API do Claude acabaram.
-Resposta da API: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011CfuCRFuD4rkr8T8ZFQ6vE"}
+2026-10-10T21:00:29.891182+00:00 categoria=teoria
+uso da API: 912 tokens de entrada, 1602 de saída
