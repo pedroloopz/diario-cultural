@@ -53,12 +53,22 @@ ANO_LIMITE = 1910
 MORTE_LIMITE = 1955   # autor morto até 1955: obra em domínio público no Brasil (70 anos)
 
 SISTEMA = (
-    "Você escreve posts para um perfil no X sobre arte, literatura e música até 1910. "
-    "Regras: português do Brasil; tom romântico, lírico mas preciso; sem emojis, sem hashtags, "
-    "sem links, sem perguntas ao leitor e sem pedir curtida, comentário ou compartilhamento; "
-    "no máximo 1500 caracteres no campo texto; nunca invente datas, obras, gravações ou citações: "
-    "se não tiver certeza de um dado, omita-o; texto original em outra língua vem seguido de "
-    "tradução sua (sem tradução se o original já for português); se o original for japonês, "
+    "Você escreve posts para um perfil pessoal no X sobre arte, literatura e música até 1910. "
+    "VOZ: uma pessoa real que acabou de reencontrar essa obra e quer contar a um amigo por que ela "
+    "mexeu com ela. Primeira pessoa quando couber ('voltei a este quadro', 'li isto de madrugada'), "
+    "português do Brasil falado com cuidado, frases curtas e claras, calor humano. Nada de tom de "
+    "aula, verbete ou catálogo de museu; nada de 'em substância', 'cumpre notar', 'nesse sentido'. "
+    "COMO CONSTRUIR: 1) abra com uma cena, um detalhe concreto ou uma frase que prenda (nunca com a "
+    "data ou 'Em 1827, Fulano...'); 2) mostre o ser humano por trás da obra: um medo, uma perda, uma "
+    "carta, uma teimosia, a pobreza, o amor, só se for fato comprovado; 3) diga o que a obra faz "
+    "com quem a vê, lê ou ouve hoje, numa linguagem de carne e osso; 4) feche com uma frase que fique "
+    "ecoando, uma imagem ou uma confissão, nunca uma moral de manual. No máximo uma metáfora por "
+    "post, e só se for boa. Contexto histórico entra pouco e a serviço da emoção. "
+    "REGRAS FIXAS: sem emojis, sem hashtags, sem links, sem perguntas ao leitor e sem pedir curtida, "
+    "comentário ou compartilhamento; entre 600 e 1100 caracteres no campo texto (o trecho original "
+    "e a tradução, quando houver, não contam); nunca invente datas, obras, gravações, cartas ou "
+    "citações: se não tiver certeza de um dado, omita-o; texto original em outra língua vem seguido "
+    "de tradução sua (sem tradução se o original já for português); se o original for japonês, "
     "coloque a leitura em kana entre parênteses antes da tradução; ao tratar de Wagner ou do "
     "nacionalismo alemão do séc. XIX, fale da obra artística com contexto histórico honesto, sem "
     "exaltar nem esconder o nacionalismo e o antissemitismo da época. "
@@ -487,8 +497,8 @@ def post_pintura(autor, movimento=False):
     foco = ("Escreva sobre o movimento ou escola artística a que o pintor pertence, usando esta obra "
             "como exemplo concreto do que o movimento buscava."
             if movimento else
-            "Escreva sobre esta obra: o contexto da época, o que observar na pintura e uma frase "
-            "final de tom romântico.")
+            "Escreva sobre esta obra como quem para diante dela: o detalhe que prende o olhar, "
+            "quem era o pintor naquele momento da vida e o que a tela faz com quem a vê hoje.")
     dados = claude(f"{foco}\nDados de catálogo (confiáveis): título: {obra['titulo']}; artista: "
                    f"{obra['artista']}; data: {obra['data']}; acervo: {obra['museu']}.\n"
                    'Responda: {"texto":"..."}')
@@ -532,8 +542,9 @@ def post_com_fonte(autor, tipo):
 def post_musica(autor):
     dados = claude(
         f"Escolha uma obra de {autor['nome']} que você tenha certeza absoluta de que existe. "
-        "Escreva: contexto da obra, por que ela é boa (aspectos musicais concretos: harmonia, forma, "
-        "timbre, retórica, texto) e termine com: Para ouvir: busque \"compositor, título da obra\". "
+        "Escreva como quem acabou de ouvir e quer contar a um amigo: o momento da música que pega "
+        "(descrito de forma concreta: um acorde, uma entrada, um silêncio), o que o compositor vivia "
+        "quando a escreveu, e termine com: Para ouvir: busque \"compositor, título da obra\". "
         "Não cite intérpretes nem gravações.\n"
         'Responda: {"texto":"...","busca_imagem":"2 ou 3 palavras em inglês para achar um '
         'instrumento, partitura ou cena musical de museu de até 1910"}')
@@ -543,7 +554,8 @@ def post_musica(autor):
 def post_teoria(autor):
     dados = claude(
         f"Explique uma ideia central de teoria literária, poética ou estética de {autor['nome']} "
-        "(obra de até 1910), em paráfrase, sem citação literal. Mostre por que a ideia ainda importa.\n"
+        "(obra de até 1910), em paráfrase, sem citação literal. Parta de uma situação concreta da vida "
+        "de hoje em que a ideia aparece, e mostre por que ela ainda importa.\n"
         'Responda: {"texto":"...","busca_imagem":"2 ou 3 palavras em inglês para achar uma obra de '
         'museu de até 1910 ligada ao tema"}')
     return {"texto": dados["texto"], "imagem": imagem_por_tema(dados["busca_imagem"]), "credito": True}
