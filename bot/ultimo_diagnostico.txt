@@ -1,11 +1,11 @@
-2026-10-10T15:43:55.450841+00:00 categoria=musica
-Antonio Vivaldi: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Joseph Bologne, Chevalier de Saint-Georges: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-John Dowland: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Barbara Strozzi: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Heinrich Marschner: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Caravaggio: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Johannes Vermeer: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+2026-10-10T19:05:03.983490+00:00 categoria=diario
+Samuel Pepys: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Frances Burney: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Marcus Aurelius: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Cosima Wagner: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Bettina von Arnim: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
 Judith Leyster: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
 Philipp Otto Runge: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Clara Peeters: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Rembrandt: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Caspar Wolf: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Carl Blechen: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
