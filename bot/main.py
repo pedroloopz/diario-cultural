@@ -31,6 +31,8 @@ UA = {"User-Agent": "diario-cultural-bot/1.0 (https://github.com/pedroloopz/diar
 
 # Ordem dos posts: cada execução pega a próxima categoria.
 DIAGNOSTICO = []  # registra o que deu errado em cada execução
+THREAD = os.environ.get("TELEGRAM_THREAD_ID", "").strip()  # tópico 🎨 Diário cultural do grupo
+ENSAIO = False  # execução de ensaio: não grava, não publica, não manda ao Telegram
 
 CICLO = ["pintura", "poema", "musica", "diario", "teoria", "movimento", "esquecido"]
 AREA_DA_CATEGORIA = {"pintura": "pintura", "movimento": "pintura", "poema": "poesia",
@@ -54,12 +56,18 @@ MORTE_LIMITE = 1955   # autor morto até 1955: obra em domínio público no Bras
 
 SISTEMA = (
     "Você escreve posts para um perfil pessoal no X sobre arte, literatura e música até 1910. "
-    "VOZ: uma pessoa real que acabou de reencontrar essa obra e quer contar a um amigo por que ela "
-    "mexeu com ela. Primeira pessoa quando couber ('voltei a este quadro', 'li isto de madrugada'), "
-    "português do Brasil falado com cuidado, frases curtas e claras, calor humano. Nada de tom de "
-    "aula, verbete ou catálogo de museu; nada de 'em substância', 'cumpre notar', 'nesse sentido'. "
-    "COMO CONSTRUIR: 1) abra com uma cena, um detalhe concreto ou uma frase que prenda (nunca com a "
-    "data ou 'Em 1827, Fulano...'); 2) mostre o ser humano por trás da obra: um medo, uma perda, uma "
+    "VOZ: uma pessoa real que gosta dessa obra e quer contar a um amigo por que ela mexe com ela. "
+    "A primeira pessoa pode REAGIR à obra ('isso me desarma', 'volto sempre a este quadro', 'este "
+    "verso não me larga'), em português do Brasil falado com cuidado, frases curtas e claras, calor "
+    "humano. Nada de tom de aula, verbete ou catálogo de museu; nada de 'em substância', 'cumpre "
+    "notar', 'nesse sentido'. "
+    "PROIBIDO INVENTAR VIVÊNCIAS de quem assina o perfil: nada de episódios, conversas, pessoas "
+    "(amigo, mãe, professor...), lugares (bar, café, metrô, museu visitado...) ou momentos ('ontem', "
+    "'de madrugada', 'semana passada', 'quando eu era criança') da vida dele. O perfil é de uma "
+    "pessoa real e qualquer cena assim seria falsa. "
+    "COMO CONSTRUIR: 1) abra com uma cena, um detalhe concreto ou uma frase que prenda, tirados da "
+    "própria obra ou da vida comprovada do autor (nunca da vida de quem assina; nunca com a data ou "
+    "'Em 1827, Fulano...'); 2) mostre o ser humano por trás da obra: um medo, uma perda, uma "
     "carta, uma teimosia, a pobreza, o amor, só se for fato comprovado; 3) diga o que a obra faz "
     "com quem a vê, lê ou ouve hoje, numa linguagem de carne e osso; 4) feche com uma frase que fique "
     "ecoando, uma imagem ou uma confissão, nunca uma moral de manual. No máximo uma metáfora por "
@@ -119,8 +127,32 @@ def telegram(metodo, tentativas=3, **kw):
         raise RuntimeError(f"Telegram {metodo} recusou: {r.status_code} {r.text[:300]}")
 
 
-def avisar(texto):
-    telegram("sendMessage", data={"chat_id": os.environ["TELEGRAM_CHAT_ID"], "text": texto})
+def destino(aviso=False):
+    """Chat e tópico do grupo. TELEGRAM_THREAD_ID vazio = manda como antes (sem tópico).
+    aviso=True vai para o tópico ⚠️ Avisos (TELEGRAM_AVISOS_THREAD_ID), se existir."""
+    d = {"chat_id": os.environ["TELEGRAM_CHAT_ID"]}
+    topico = (aviso and os.environ.get("TELEGRAM_AVISOS_THREAD_ID", "").strip()) or THREAD
+    if topico:
+        d["message_thread_id"] = topico
+    return d
+
+
+def avisar(texto, aviso=False):
+    if ENSAIO:
+        print(f"[ensaio] Telegram não enviado: {texto}")
+        return
+    telegram("sendMessage", data={**destino(aviso), "text": texto})
+
+
+def do_meu_topico(msg):
+    """Privacidade: só o chat configurado e, no grupo, só o tópico deste bot. Sem tópico
+    configurado, só a conversa privada. O resto é descartado sem ler nem registrar."""
+    chat = msg.get("chat", {})
+    if str(chat.get("id")) != str(os.environ["TELEGRAM_CHAT_ID"]):
+        return False
+    if THREAD:
+        return str(msg.get("message_thread_id")) == THREAD
+    return chat.get("type") == "private"
 
 
 class ApiBloqueada(Exception):
@@ -270,22 +302,22 @@ def processar_comandos(estado, autores):
     except Exception as erro:
         DIAGNOSTICO.append(f"comandos do Telegram não lidos nesta execução: {erro}")
         return
+    ignoradas = 0
     for u in r.get("result", []):
         estado["offset"] = u["update_id"] + 1
-        m = u.get("message") or u.get("channel_post") or {}
-        ch = m.get("chat", {})
-        if ch:
-            DIAGNOSTICO.append(f"chat visto: id={ch.get('id')} tipo={ch.get('type')} "
-                               f"nome={ch.get('title') or ch.get('first_name') or ''}")
-        if str(m.get("chat", {}).get("id")) != str(os.environ["TELEGRAM_CHAT_ID"]):
+        m = u.get("message") or {}
+        if not do_meu_topico(m):
+            ignoradas += 1  # outro tópico/chat: só a contagem, nada do conteúdo
             continue
-        texto = (m.get("text") or "").strip()
+        texto = re.sub(r"^(/\w+)@\w+", r"\1", (m.get("text") or "").strip())  # /remover@bot no grupo
         if texto.startswith("/remover "):
             alvo = texto[len("/remover "):].strip().lower()
             for a in autores:
                 if a["nome"].lower() == alvo:
                     a["aprovado"] = False
                     avisar(f"{a['nome']} saiu do rodízio.")
+    if ignoradas:
+        DIAGNOSTICO.append(f"Telegram: {ignoradas} mensagem(ns) de fora do tópico ignorada(s)")
 
 
 # ---------- imagens via Wikidata/Wikimedia Commons (fonte principal) ----------
@@ -424,6 +456,45 @@ def obra_do_pintor_museus(nome):
                          and sobrenome in sem_acento(o.get("artist_title") or "")))
 
 
+def imagem_do_post(autor, busca):
+    """Teoria, poema, diário e música: 1) retrato do autor (Wikidata P18); 2) pintura ligada ao
+    tema, do mesmo país do autor e da mesma época (±50 anos); 3) busca genérica pelo tema."""
+    qid = autor.get("wikidata") or tentar(wd_pessoa, autor["nome"])
+    claims = ((tentar(wd_entidades, [qid]) or {}).get(qid, {}) if qid else {}).get("claims", {})
+    arquivo = wd_valor(claims, "P18")
+    if arquivo:
+        DIAGNOSTICO.append("imagem: 1 (retrato do autor no Wikidata)")
+        base = "https://commons.wikimedia.org/wiki/Special:FilePath/" + quote(arquivo.replace(" ", "_"))
+        return {"url": base + "?width=2048", "url_menor": base + "?width=1024",
+                "titulo": f"Retrato de {autor['nome']}", "artista": "", "data": "",
+                "museu": "Wikimedia Commons"}
+    anos = [a for a in (ano_wikidata(claims, "P569"), ano_wikidata(claims, "P570")) if a]
+    paises = [c["mainsnak"].get("datavalue", {}).get("value", {}).get("id") for c in claims.get("P27", [])]
+    paises = [x for x in paises if x]
+    if anos and paises:
+        obra = tentar(wd_pinturas_epoca, busca, paises, sum(anos) // len(anos))
+        if obra:
+            DIAGNOSTICO.append("imagem: 2 (obra do mesmo país e época do autor)")
+            return obra
+    DIAGNOSTICO.append("imagem: 3 (busca genérica pelo tema)")
+    return imagem_por_tema(busca)
+
+
+def wd_pinturas_epoca(busca, paises, ano):
+    termos = [busca] + ([busca.split()[0]] if len(busca.split()) > 1 else [])
+    for termo in termos:
+        for pais in paises[:3]:
+            ids = wd_busca(f"{termo} haswbstatement:P31=Q3305213 haswbstatement:P18 haswbstatement:P495={pais}")
+            random.shuffle(ids)
+            for ent in wd_entidades(ids[:20]).values():
+                a = ano_wikidata(ent.get("claims", {}), "P571")
+                if a and abs(a - ano) <= 50:
+                    obra = wd_pintura(ent)
+                    if obra:
+                        return obra
+    return None
+
+
 def imagem_por_tema(busca):
     return (tentar(wd_pinturas, busca)
             or tentar(wd_pinturas, busca.split()[0] if busca.split() else "landscape")
@@ -494,6 +565,7 @@ def post_pintura(autor, movimento=False):
     if not obra:
         DIAGNOSTICO.append(f"{autor['nome']}: nenhuma pintura em domínio público no Met nem no AIC")
         return None
+    DIAGNOSTICO.append("imagem: a própria pintura do post")
     foco = ("Escreva sobre o movimento ou escola artística a que o pintor pertence, usando esta obra "
             "como exemplo concreto do que o movimento buscava."
             if movimento else
@@ -533,8 +605,8 @@ def post_com_fonte(autor, tipo):
             return None
         if trecho_confere(dados["trecho_original"], fonte) and \
                 norm(dados["trecho_original"]) in norm(dados["texto"]):
-            return {"texto": dados["texto"], "imagem": imagem_por_tema(dados["busca_imagem"]),
-                    "credito": True}
+            return {"texto": dados["texto"], "imagem": imagem_do_post(autor, dados["busca_imagem"]),
+                    "credito": True, "trecho": trecho}
     DIAGNOSTICO.append(f"{autor['nome']}: trecho não conferiu com a fonte '{titulo}'")
     return None
 
@@ -548,17 +620,50 @@ def post_musica(autor):
         "Não cite intérpretes nem gravações.\n"
         'Responda: {"texto":"...","busca_imagem":"2 ou 3 palavras em inglês para achar um '
         'instrumento, partitura ou cena musical de museu de até 1910"}')
-    return {"texto": dados["texto"], "imagem": imagem_por_tema(dados["busca_imagem"]), "credito": True}
+    return {"texto": dados["texto"], "imagem": imagem_do_post(autor, dados["busca_imagem"]), "credito": True}
 
 
 def post_teoria(autor):
     dados = claude(
         f"Explique uma ideia central de teoria literária, poética ou estética de {autor['nome']} "
-        "(obra de até 1910), em paráfrase, sem citação literal. Parta de uma situação concreta da vida "
-        "de hoje em que a ideia aparece, e mostre por que ela ainda importa.\n"
+        "(obra de até 1910), em paráfrase, sem citação literal. Parta de uma cena da obra ou da vida "
+        "comprovada do autor, e mostre por que a ideia ainda importa hoje (em termos gerais, sem "
+        "inventar episódios pessoais).\n"
         'Responda: {"texto":"...","busca_imagem":"2 ou 3 palavras em inglês para achar uma obra de '
         'museu de até 1910 ligada ao tema"}')
-    return {"texto": dados["texto"], "imagem": imagem_por_tema(dados["busca_imagem"]), "credito": True}
+    return {"texto": dados["texto"], "imagem": imagem_do_post(autor, dados["busca_imagem"]), "credito": True}
+
+
+VIVENCIA = re.compile(
+    r"\b(uma? amig[oa]|meu amigo|minha amiga|amigos meus|ontem|anteontem|de madrugada|na madrugada"
+    r"|no bar|num bar|no café|num café|no metrô|no ônibus|na fila|semana passada|outro dia|certa vez"
+    r"|quando eu era|me disse|me contou|me falou|minha mãe|meu pai|minha avó|meu avô"
+    r"|minha namorada|meu namorado|minha mulher|meu marido|meu professor|minha professora)\b", re.I)
+
+
+def revisar_vivencia(post, autor):
+    """Vivência inventada no nome de quem assina ('um amigo', 'no bar', 'de madrugada'...):
+    pede UMA reescrita. O trecho original (poema/diário) não entra na checagem."""
+    trecho = post.get("trecho", "")
+    def marcas(t):
+        return sorted({m.lower() for m in VIVENCIA.findall(t.replace(trecho, "") if trecho else t)})
+    achadas = marcas(post["texto"])
+    if not achadas:
+        return post
+    DIAGNOSTICO.append(f"{autor['nome']}: marcas de vivência inventada ({', '.join(achadas)}); reescrita pedida")
+    novo = claude(
+        "Reescreva o post abaixo sem nenhuma vivência pessoal inventada de quem assina o perfil "
+        f"(marcas encontradas: {', '.join(achadas)}). Se a abertura for uma cena da vida de quem assina, "
+        "troque por uma cena da obra ou da vida comprovada do autor. A primeira pessoa pode reagir à obra. "
+        "Mantenha o resto, o tamanho e o tom; trecho original e tradução, se houver, ficam idênticos.\n"
+        f"<<<\n{post['texto']}\n>>>\n" 'Responda: {"texto":"..."}').get("texto", "").strip()
+    if not novo or (trecho and norm(trecho) not in norm(novo)):
+        DIAGNOSTICO.append(f"{autor['nome']}: reescrita descartada (vazia ou sem o trecho original)")
+        return post
+    resto = marcas(novo)
+    DIAGNOSTICO.append(f"{autor['nome']}: reescrito" + (f"; ainda contém: {', '.join(resto)}" if resto else ""))
+    post["texto"] = novo
+    return post
 
 
 def montar(categoria, autores, hoje):
@@ -580,6 +685,8 @@ def montar(categoria, autores, hoje):
                 post = post_musica(autor)
             else:
                 post = post_teoria(autor)
+            if post:
+                post = revisar_vivencia(post, autor)
         except ApiBloqueada:
             raise
         except Exception as e:  # um autor problemático não derruba a execução
@@ -614,7 +721,7 @@ def pausar_por_bloqueio(erro, categoria, estado, autores):
         estado["aviso_bloqueio"] = hoje
         try:
             avisar(f"⚠️ Diário cultural pausado: {motivo}\nComo resolver: {solucao}\n"
-                   "(Este aviso sai no máximo 1 vez por dia.)")
+                   "(Este aviso sai no máximo 1 vez por dia.)", aviso=True)
         except Exception as e:
             print(f"aviso no Telegram falhou: {e}")
     gravar(AUTORES, autores)
@@ -642,7 +749,7 @@ def gerar():
     if not post:
         gravar(AUTORES, autores)
         gravar(ESTADO, estado)
-        avisar("O post desta execução falhou:\n" + "\n".join(DIAGNOSTICO[-8:]))
+        print("O post desta execução falhou:\n" + "\n".join(DIAGNOSTICO[-8:]))
         sys.exit("Nenhum post gerado nesta execução.")
 
     pid = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M")
@@ -656,7 +763,8 @@ def gerar():
     texto = post["texto"].strip()
     if post["credito"]:
         i = post["imagem"]
-        texto += f"\n\nImagem: {i['titulo']}, {i['artista']}, {i['data']}. {i['museu']}."
+        partes = ", ".join(x for x in (i["titulo"], i["artista"], i["data"]) if x)
+        texto += f"\n\nImagem: {partes}. {i['museu']}."
     gravar(POSTS / f"{pid}.json", {"texto": texto, "imagem": f"{pid}.jpg", "categoria": categoria})
 
     estado["pendente"] = pid
@@ -671,20 +779,41 @@ def enviar():
     if not pid:
         return
     post = ler(POSTS / f"{pid}.json", None)
-    chat = os.environ["TELEGRAM_CHAT_ID"]
     pagina = f"{os.environ['PAGES_URL'].rstrip('/')}/enviar.html?id={pid}"
-    telegram("sendMessage", data={"chat_id": chat, "parse_mode": "HTML",
+    telegram("sendMessage", data={**destino(), "parse_mode": "HTML",
                                   "text": f"<pre>{html.escape(post['texto'])}</pre>"})
     with open(POSTS / post["imagem"], "rb") as f:
         telegram("sendPhoto", files={"photo": f}, data={
-            "chat_id": chat,
+            **destino(),
             "reply_markup": json.dumps({"inline_keyboard": [[{"text": "Enviar ao X", "url": pagina}]]}),
         })
+
+
+def ensaio(categoria):
+    """Execução de ensaio: gera um post da categoria pedida sem gravar estado, sem publicar e
+    sem mandar ao Telegram. Mostra texto, imagem e diagnóstico no log e no resumo da execução."""
+    global ENSAIO
+    ENSAIO = True
+    post = montar(categoria, ler(AUTORES, []), datetime.date.today())
+    i = (post or {}).get("imagem") or {}
+    saida = (f"## Ensaio: {categoria}\n\n" + "\n".join(f"- {d}" for d in DIAGNOSTICO) + "\n\n"
+             + (f"**Texto:**\n\n```\n{post['texto']}\n```\n\n**Imagem:** "
+                f"{', '.join(x for x in (i.get('titulo'), i.get('artista'), i.get('data')) if x)} "
+                f"({i.get('museu')}) {i.get('url')}\n" if post else "Nenhum post gerado.\n"))
+    print(saida)
+    if os.environ.get("GITHUB_STEP_SUMMARY"):
+        with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+            f.write(saida)
+    if not post:
+        sys.exit("Ensaio sem post.")
 
 
 if __name__ == "__main__":
     import traceback
     try:
+        if sys.argv[1] == "ensaio":
+            ensaio(sys.argv[2])
+            sys.exit(0)
         {"gerar": gerar, "enviar": enviar}[sys.argv[1]]()
     except SystemExit:
         raise
@@ -693,8 +822,4 @@ if __name__ == "__main__":
         print(erro)
         (RAIZ / "bot" / "ultimo_diagnostico.txt").write_text(
             f"{sys.argv[1]} falhou\n" + "\n".join(DIAGNOSTICO) + "\n\n" + erro, encoding="utf-8")
-        try:
-            avisar(f"O bot falhou ({sys.argv[1]}):\n" + erro[-1500:])
-        except Exception:
-            pass
-        sys.exit(1)
+        sys.exit(1)  # o aviso no Telegram sai pelo avisos.py do workflow

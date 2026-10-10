@@ -12,11 +12,11 @@ publica no GitHub Pages (`docs/`) e manda ao Telegram com o botão "Enviar ao X"
 
 ## Segredos e variáveis (só os nomes)
 - Secrets: `ANTHROPIC_API_KEY`, `TELEGRAM_TOKEN`, `TELEGRAM_CHAT_ID`, `PAGES_URL`
-- Variables: `CLAUDE_MODEL` (vazio = modelo padrão do código)
+- Variables: `CLAUDE_MODEL` (vazio = modelo padrão do código), `TELEGRAM_THREAD_ID` (tópico 🎨 Diário cultural), `TELEGRAM_AVISOS_THREAD_ID` (⚠️ Avisos)
 
 ## Como testar
 - Sintaxe: `python -m py_compile bot/main.py`
-- Ensaio real: Actions → diario-cultural → Run workflow. **Cada execução custa ~US$ 0,04**; no máximo 5 por tarefa.
+- Ensaio: Actions → diario-cultural → Run workflow → `ensaio: teoria|musica|poema` (não publica nem manda ao Telegram; texto, imagem e diagnóstico no resumo da execução). **Cada execução custa ~US$ 0,04**; no máximo 5 por tarefa.
 - Conferir `bot/ultimo_diagnostico.txt` e o post em `docs/posts/`.
 
 ## Regras do Pedro
@@ -27,7 +27,10 @@ publica no GitHub Pages (`docs/`) e manda ao Telegram com o botão "Enviar ao X"
 - Segredos só via `secrets`/`vars` do GitHub. Nunca chave no código nem no log; nunca peça token colado na conversa.
 - Dependeu de decisão do Pedro → pare e pergunte em uma frase, com opções.
 - **Custo:** este é o único bot que usa a API paga do Claude (crédito só para ele). Não aumente o número de chamadas sem perguntar.
-- Conteúdo: tom humano, mas **nada de vivência inventada** do Pedro (pessoas, lugares, episódios). Cenas só da obra ou da vida comprovada do autor.
+- Conteúdo: tom humano, mas **nada de vivência inventada** do Pedro (pessoas, lugares, episódios). Cenas só da obra ou da vida comprovada do autor. Marcas de vivência (`VIVENCIA` em `bot/main.py`) pedem uma reescrita.
+- Imagem (teoria, poema, diário, música): 1) retrato do autor no Wikidata; 2) obra do mesmo país e época; 3) busca genérica. O diagnóstico diz qual.
+- **Privacidade:** o bot é admin do grupo e recebe tudo. Só processa mensagens do próprio tópico (`do_meu_topico`); as de outros tópicos (📸 Família, 📝 Rascunhos…) são descartadas sem salvar, logar ou enviar ao Claude.
+- Erros vão para ⚠️ Avisos via `avisos.py` (mesma falha 2x seguidas, 1 aviso/dia, ignora rede/429/5xx).
 
 ## Como trabalhar
 - **Pense antes de codar:** diga as suposições em voz alta; se o pedido aceita mais de uma leitura, pergunte em vez de escolher calado.

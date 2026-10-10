@@ -6,6 +6,12 @@ on:
     - cron: "0 15 * * *"   # 12h de Brasília
     - cron: "0 21 * * *"   # 18h de Brasília
   workflow_dispatch:
+    inputs:
+      ensaio:
+        description: "Ensaio (não publica nem manda ao Telegram; ~US$ 0,04): teoria, musica ou poema. 'nao' = post normal"
+        type: choice
+        default: nao
+        options: [nao, teoria, musica, poema]
 
 permissions:
   contents: write
@@ -16,24 +22,28 @@ concurrency:
 
 jobs:
   post:
-    runs-on: ubuntu-latest
+    if: ${{ !inputs.ensaio || inputs.ensaio == 'nao' }}
+    runs-on: ubuntu-24.04
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TELEGRAM_THREAD_ID: ${{ vars.TELEGRAM_THREAD_ID }}
+      TELEGRAM_AVISOS_THREAD_ID: ${{ vars.TELEGRAM_AVISOS_THREAD_ID }}
       PAGES_URL: ${{ secrets.PAGES_URL }}
       CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - run: pip install -r requirements.txt
 
       - name: Gerar post
-        run: python bot/main.py gerar
+        shell: bash
+        run: python bot/main.py gerar 2>&1 | tee -a run.log
 
       - name: Publicar no GitHub Pages
         if: always()
@@ -47,10 +57,34 @@ jobs:
         run: sleep 120
 
       - name: Enviar ao Telegram
-        run: python bot/main.py enviar
+        shell: bash
+        run: python bot/main.py enviar 2>&1 | tee -a run.log
 
       - name: Salvar diagnóstico
         if: always()
         run: |
           git add bot
           git diff --cached --quiet || (git commit -m "diagnóstico" && git pull --rebase && git push)
+
+      - name: Avisar falha (tópico Avisos)
+        if: always()
+        run: python3 avisos.py "${{ github.workflow }}" "${{ job.status }}"
+
+  ensaio:
+    if: ${{ inputs.ensaio && inputs.ensaio != 'nao' }}
+    runs-on: ubuntu-24.04
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+      TELEGRAM_CHAT_ID: ensaio
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Ensaio (resultado no resumo da execução)
+        run: python bot/main.py ensaio "${{ inputs.ensaio }}"
