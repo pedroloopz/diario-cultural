@@ -22,6 +22,7 @@ jobs:
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       PAGES_URL: ${{ secrets.PAGES_URL }}
+      CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
     steps:
       - uses: actions/checkout@v6
 

@@ -24,7 +24,9 @@ AUTORES = RAIZ / "bot" / "autores.json"
 ESTADO = RAIZ / "bot" / "estado.json"
 POSTS = RAIZ / "docs" / "posts"
 
-MODELO = "claude-opus-5-5"  # melhor qualidade; troque por "claude-sonnet-5-5" para gastar menos
+# Modelo configurável sem mexer no código: GitHub → Settings → Secrets and variables →
+# Actions → aba Variables → CLAUDE_MODEL (ex.: claude-sonnet-5-5 para gastar menos).
+MODELO = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-opus-5-5"
 UA = {"User-Agent": "diario-cultural-bot/1.0 (https://github.com/pedroloopz/diario-cultural)"}
 
 # Ordem dos posts: cada execução pega a próxima categoria.
@@ -111,6 +113,29 @@ def avisar(texto):
     telegram("sendMessage", data={"chat_id": os.environ["TELEGRAM_CHAT_ID"], "text": texto})
 
 
+class ApiBloqueada(Exception):
+    """Erro da API do Claude que não se resolve tentando outro autor (crédito, chave, permissão)."""
+
+
+SINAIS_BLOQUEIO = ("credit balance", "billing", "insufficient", "quota", "invalid x-api-key",
+                   "authentication", "permission", "not_found_error", "model:")
+
+
+def explicar_bloqueio(status, corpo):
+    c = corpo.lower()
+    if "credit" in c or "billing" in c or "insufficient" in c:
+        return ("os créditos da API do Claude acabaram.",
+                "abra platform.claude.com → Billing e adicione crédito. O bot volta sozinho na próxima execução.")
+    if status == 401 or "x-api-key" in c or "authentication" in c:
+        return ("a chave da API do Claude não é mais válida.",
+                "crie uma chave nova em platform.claude.com → API keys e atualize o segredo "
+                "ANTHROPIC_API_KEY no GitHub (Settings → Secrets and variables → Actions).")
+    if "model" in c or status == 404:
+        return (f"o modelo '{MODELO}' não foi aceito pela API.",
+                "crie a variável CLAUDE_MODEL no GitHub com um modelo válido (ex.: claude-sonnet-5-5).")
+    return (f"a API do Claude recusou o pedido ({status}).", "veja o arquivo bot/ultimo_diagnostico.txt.")
+
+
 def claude(pedido, max_tokens=8000):
     r = requests.post(
         "https://api.anthropic.com/v1/messages",
@@ -120,7 +145,15 @@ def claude(pedido, max_tokens=8000):
               "messages": [{"role": "user", "content": pedido}]},
         timeout=180,
     )
-    r.raise_for_status()
+    if not r.ok:
+        corpo = r.text[:500]
+        if r.status_code in (401, 403, 404) or (
+                r.status_code == 400 and any(x in corpo.lower() for x in SINAIS_BLOQUEIO)):
+            raise ApiBloqueada(f"{r.status_code} {corpo}")
+        raise RuntimeError(f"API do Claude {r.status_code}: {corpo}")
+    uso = r.json().get("usage", {})
+    DIAGNOSTICO.append(f"uso da API: {uso.get('input_tokens', 0)} tokens de entrada, "
+                       f"{uso.get('output_tokens', 0)} de saída")
     texto = "".join(b.get("text", "") for b in r.json()["content"] if b.get("type") == "text")
     texto = re.sub(r"^```(?:json)?\s*|\s*```$", "", texto.strip())
     return json.loads(texto)
@@ -146,6 +179,8 @@ def escolher(autores, area, hoje, so_desconhecidos=False, evitar=()):
     if len(disp) < MINIMO_DISPONIVEIS:
         try:
             repor(autores, area)
+        except ApiBloqueada:
+            raise
         except Exception as e:
             DIAGNOSTICO.append(f"reposição de autores em {area} falhou: {type(e).__name__}: {str(e)[:200]}")
         disp = [a for a in disponiveis(autores, area, hoje) if a["nome"] not in evitar]
@@ -323,6 +358,8 @@ def wd_pinturas(consulta, artista=None):
 def tentar(funcao, *args):
     try:
         return funcao(*args)
+    except ApiBloqueada:
+        raise
     except Exception as e:
         DIAGNOSTICO.append(f"{funcao.__name__} falhou: {type(e).__name__}: {str(e)[:150]}")
         return None
@@ -531,6 +568,8 @@ def montar(categoria, autores, hoje):
                 post = post_musica(autor)
             else:
                 post = post_teoria(autor)
+        except ApiBloqueada:
+            raise
         except Exception as e:  # um autor problemático não derruba a execução
             print(f"Falhou com {autor['nome']}: {e}")
             DIAGNOSTICO.append(f"{autor['nome']}: erro {type(e).__name__}: {str(e)[:300]}")
@@ -547,6 +586,30 @@ def montar(categoria, autores, hoje):
 
 # ---------- comandos ----------
 
+def pausar_por_bloqueio(erro, categoria, estado, autores):
+    """Sem crédito/chave não adianta tentar 10 autores nem falhar a execução toda vez:
+    registra, avisa no Telegram no máximo 1 vez por dia e encerra sem erro."""
+    status, _, corpo = str(erro).partition(" ")
+    motivo, solucao = explicar_bloqueio(int(status) if status.isdigit() else 0, corpo)
+    agora = datetime.datetime.now(datetime.timezone.utc)
+    (RAIZ / "bot" / "ultimo_diagnostico.txt").write_text(
+        f"{agora.isoformat()} categoria={categoria}\nPAUSADO: {motivo}\nResposta da API: {erro}\n"
+        + "\n".join(DIAGNOSTICO), encoding="utf-8")
+    estado["proxima"] = estado.get("proxima", 1) - 1  # não pula a categoria
+    estado["pendente"] = None
+    hoje = agora.date().isoformat()
+    if estado.get("aviso_bloqueio") != hoje:
+        estado["aviso_bloqueio"] = hoje
+        try:
+            avisar(f"⚠️ Diário cultural pausado: {motivo}\nComo resolver: {solucao}\n"
+                   "(Este aviso sai no máximo 1 vez por dia.)")
+        except Exception as e:
+            print(f"aviso no Telegram falhou: {e}")
+    gravar(AUTORES, autores)
+    gravar(ESTADO, estado)
+    print(f"Pausado: {motivo} | {erro}")
+
+
 def gerar():
     hoje = datetime.date.today()
     autores = ler(AUTORES, [])
@@ -556,7 +619,11 @@ def gerar():
     categoria = CICLO[estado.get("proxima", 0) % len(CICLO)]
     estado["proxima"] = estado.get("proxima", 0) + 1
 
-    post = montar(categoria, autores, hoje) or montar("pintura", autores, hoje)
+    try:
+        post = montar(categoria, autores, hoje) or montar("pintura", autores, hoje)
+    except ApiBloqueada as e:
+        pausar_por_bloqueio(e, categoria, estado, autores)
+        return
     (RAIZ / "bot" / "ultimo_diagnostico.txt").write_text(
         f"{datetime.datetime.now(datetime.timezone.utc).isoformat()} categoria={categoria}\n"
         + "\n".join(DIAGNOSTICO), encoding="utf-8")
