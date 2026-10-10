@@ -1,2 +1,4 @@
-2026-10-10T21:00:29.891182+00:00 categoria=teoria
-uso da API: 912 tokens de entrada, 1602 de saída
+2026-10-10T23:56:49.211130+00:00 categoria=movimento
+Telegram: 35 mensagem(ns) de fora do tópico ignorada(s)
+imagem: a própria pintura do post
+uso da API: 1088 tokens de entrada, 1482 de saída
