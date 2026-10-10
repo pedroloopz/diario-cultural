@@ -113,7 +113,7 @@ def main(fluxo, status, log="run.log"):
     url = (f"{os.environ.get('GITHUB_SERVER_URL', '')}/{os.environ.get('GITHUB_REPOSITORY', '')}"
            f"/actions/runs/{os.environ.get('GITHUB_RUN_ID', '')}") if os.environ.get("GITHUB_RUN_ID") else ""
     registrar(fluxo, erro, url)
-    if os.environ.get("GITHUB_ACTIONS"):
+    if os.environ.get("GITHUB_ACTIONS") and PASTA.exists():
         git_salvar()
 
 
