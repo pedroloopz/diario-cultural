@@ -1,11 +1,3 @@
-2026-10-10T19:05:03.983490+00:00 categoria=diario
-Samuel Pepys: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Frances Burney: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Marcus Aurelius: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Cosima Wagner: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Bettina von Arnim: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Judith Leyster: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Philipp Otto Runge: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Rembrandt: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Caspar Wolf: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Carl Blechen: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+2026-10-10T20:36:03.480123+00:00 categoria=teoria
+PAUSADO: os créditos da API do Claude acabaram.
+Resposta da API: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011CfuCRFuD4rkr8T8ZFQ6vE"}
