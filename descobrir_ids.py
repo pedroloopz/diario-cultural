@@ -40,12 +40,14 @@ def coletar(updates):
 
 def texto(grupos, eu):
     if not grupos:
-        return ("Nenhum grupo encontrado. Confira: 1) o bot @" + eu + " está no grupo; 2) o modo de "
-                "privacidade está desligado (@BotFather → /setprivacy → Disable) e o bot foi removido e "
-                "adicionado de novo ao grupo; 3) você mandou uma mensagem em cada tópico pouco antes de rodar.")
+        return ("Nenhum grupo encontrado. Confira: 1) o bot @" + eu + " está no grupo como administrador; "
+                "2) você mandou uma mensagem em cada tópico pouco antes de rodar (os bots leem o chat "
+                "sozinhos e, depois disso, a mensagem some desta lista).")
     L = [f"IDs vistos pelo bot @{eu}:"]
     for cid, g in grupos.items():
-        L.append(f"\nGrupo: {g['nome']}\nTELEGRAM_CHAT_ID = {cid}" + ("" if g["forum"] else "  (tópicos desligados)"))
+        usar = g["forum"] or g["topicos"]
+        L.append(f"\nGrupo: {g['nome']}\nTELEGRAM_CHAT_ID = {cid}" +
+                 ("  ← use este" if usar else "  (sem tópicos: grupo antigo, antes de virar supergrupo; não use)"))
         for tid, nome in sorted(g["topicos"].items()):
             L.append(f"  {nome}: message_thread_id = {tid}")
         if g["forum"] and not g["topicos"]:
