@@ -1,11 +1,11 @@
-2026-10-09T19:58:06.788964+00:00 categoria=pintura
-Juan Sánchez Cotán: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Hercules Segers: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Philipp Otto Runge: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Caspar David Friedrich: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Johannes Vermeer: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Moritz von Schwind: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Adam Elsheimer: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Philipp Otto Runge: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
-Hercules Segers: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+2026-10-10T00:22:36.295478+00:00 categoria=poema
+Andreas Gryphius: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Gregório de Matos: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Henry Vaughan: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Friedrich Hölderlin: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Matsuo Bashō: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
 Rembrandt: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Moritz von Schwind: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Philipp Otto Runge: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Adam Elsheimer: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
+Caravaggio: erro HTTPError: 400 Client Error: Bad Request for url: https://api.anthropic.com/v1/messages
