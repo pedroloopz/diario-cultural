@@ -1,4 +1,4 @@
-2026-10-11T16:09:25.979907+00:00 categoria=esquecido
+2026-10-11T19:17:33.380402+00:00 categoria=pintura
 Telegram: 100 mensagem(ns) de fora do tópico ignorada(s)
-uso da API: 1129 tokens de entrada, 1533 de saída
-imagem: 1 (retrato do autor no Wikidata)
+imagem: a própria pintura do post
+uso da API: 1089 tokens de entrada, 1446 de saída
