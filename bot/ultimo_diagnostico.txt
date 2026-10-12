@@ -1,5 +1,4 @@
-2026-10-12T00:03:16.671359+00:00 categoria=poema
-Telegram: 94 mensagem(ns) de fora do tópico ignorada(s)
-uso da API: 1059 tokens de entrada, 159 de saída
-uso da API: 2512 tokens de entrada, 1480 de saída
+2026-10-12T19:38:29.484831+00:00 categoria=musica
+Telegram: 2 mensagem(ns) de fora do tópico ignorada(s)
+uso da API: 1580 tokens de entrada, 1968 de saída
 imagem: 1 (retrato do autor no Wikidata)
