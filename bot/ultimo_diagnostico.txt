@@ -1,4 +1,5 @@
-2026-10-11T19:17:33.380402+00:00 categoria=pintura
-Telegram: 100 mensagem(ns) de fora do tópico ignorada(s)
-imagem: a própria pintura do post
-uso da API: 1089 tokens de entrada, 1446 de saída
+2026-10-12T00:03:16.671359+00:00 categoria=poema
+Telegram: 94 mensagem(ns) de fora do tópico ignorada(s)
+uso da API: 1059 tokens de entrada, 159 de saída
+uso da API: 2512 tokens de entrada, 1480 de saída
+imagem: 1 (retrato do autor no Wikidata)
