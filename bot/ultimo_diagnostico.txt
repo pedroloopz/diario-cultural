@@ -1,4 +1,7 @@
-2026-10-12T19:38:29.484831+00:00 categoria=musica
-Telegram: 2 mensagem(ns) de fora do tópico ignorada(s)
-uso da API: 1580 tokens de entrada, 1968 de saída
+2026-10-12T22:21:18.141950+00:00 categoria=diario
+uso da API: 1482 tokens de entrada, 182 de saída
+uso da API: 7978 tokens de entrada, 2063 de saída
 imagem: 1 (retrato do autor no Wikidata)
+Jean-Jacques Rousseau: marcas de vivência inventada (um amigo); reescrita pedida
+uso da API: 2167 tokens de entrada, 892 de saída
+Jean-Jacques Rousseau: reescrito
