@@ -44,6 +44,13 @@ def assinatura(erro):
 
 
 def telegram(texto):
+    try:
+        import central
+        if central.ativa():
+            central.publicar_item("avisos", "erro", texto)
+            return
+    except ImportError:
+        pass
     token, chat = os.environ.get("TELEGRAM_TOKEN", ""), os.environ.get("TELEGRAM_CHAT_ID", "")
     if not (token and chat):
         print("aviso (sem Telegram configurado):\n" + texto)
@@ -115,6 +122,13 @@ def main(fluxo, status, log="run.log"):
     registrar(fluxo, erro, url)
     if os.environ.get("GITHUB_ACTIONS") and PASTA.exists():
         git_salvar()
+    try:  # manda o que o bot gravou nesta execução para a Central no Claude
+        import central
+        central.publicar_branch()
+    except ImportError:
+        pass
+    except Exception as e:
+        print(f"[avisos] Central falhou: {e}")
 
 
 if __name__ == "__main__":

@@ -19,6 +19,9 @@ import requests
 from urllib.parse import quote
 from PIL import Image
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+import central  # noqa: E402
+
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 AUTORES = RAIZ / "bot" / "autores.json"
 ESTADO = RAIZ / "bot" / "estado.json"
@@ -121,6 +124,8 @@ def telegram(metodo, tentativas=3, **kw):
     """Chama a API do Telegram. Lentidão ou erro 5xx/429 tenta de novo (o Telegram às vezes demora)."""
     import time
 
+    if central.ativa():  # Telegram desligado: as mensagens vão para a Central no Claude
+        return {"result": []}
     url = f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}/{metodo}"
     for n in range(1, tentativas + 1):
         for f in (kw.get("files") or {}).values():
@@ -153,6 +158,9 @@ def destino(aviso=False):
 def avisar(texto, aviso=False):
     if ENSAIO:
         print(f"[ensaio] Telegram não enviado: {texto}")
+        return
+    if central.ativa():
+        central.publicar_item("cultural", "aviso" if aviso else "nota", texto)
         return
     telegram("sendMessage", data={**destino(aviso), "text": texto})
 
@@ -793,6 +801,10 @@ def enviar():
         return
     post = ler(POSTS / f"{pid}.json", None)
     pagina = f"{os.environ['PAGES_URL'].rstrip('/')}/enviar.html?id={pid}"
+    if central.ativa():
+        central.publicar_item("cultural", "post", post["texto"], arquivos=[(POSTS / post["imagem"], "")],
+                              extra={"x": pagina, "categoria": post.get("categoria")})
+        return
     telegram("sendMessage", data={**destino(), "parse_mode": "HTML",
                                   "text": f"<pre>{html.escape(post['texto'])}</pre>"})
     with open(POSTS / post["imagem"], "rb") as f:
