@@ -1,3 +1,3 @@
-2026-10-13T20:28:08.572940+00:00 categoria=esquecido
-uso da API: 1590 tokens de entrada, 1990 de saída
-imagem: 1 (retrato do autor no Wikidata)
+2026-10-14T00:00:34.460680+00:00 categoria=pintura
+imagem: a própria pintura do post
+uso da API: 1505 tokens de entrada, 1777 de saída
