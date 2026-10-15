@@ -1,4 +1,3 @@
-2026-10-14T23:31:57.109589+00:00 categoria=diario
-uso da API: 1477 tokens de entrada, 155 de saída
-uso da API: 6619 tokens de entrada, 1940 de saída
+2026-10-15T14:41:25.452094+00:00 categoria=teoria
+uso da API: 1540 tokens de entrada, 1477 de saída
 imagem: 1 (retrato do autor no Wikidata)
