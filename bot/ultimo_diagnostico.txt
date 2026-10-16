@@ -1,4 +1,3 @@
-2026-10-16T18:33:49.200888+00:00 categoria=poema
-uso da API: 1466 tokens de entrada, 148 de saída
-uso da API: 2105 tokens de entrada, 1807 de saída
+2026-10-16T23:05:25.238973+00:00 categoria=musica
+uso da API: 1590 tokens de entrada, 1889 de saída
 imagem: 1 (retrato do autor no Wikidata)
