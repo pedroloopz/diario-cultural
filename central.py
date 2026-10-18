@@ -43,6 +43,11 @@ def publicar_item(fonte, tipo, texto="", html=False, arquivos=(), extra=None):
             "texto": texto, "html": bool(html), "anexos": nomes, "extra": extra or {}}
     with open(NOVO / "saida.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(item, ensure_ascii=False) + "\n")
+    try:
+        import discord_envio
+        discord_envio.enviar(fonte, texto, html=html, arquivos=arquivos, extra=extra, tipo=tipo)
+    except Exception as e:  # o Discord nunca derruba o bot
+        print(f"Discord falhou: {e}")
     print(f"Central: {fonte}/{tipo} gravado ({len(nomes)} anexo(s))")
     return iid
 
