@@ -1,8 +1,3 @@
-2026-10-18T13:47:11.506884+00:00 categoria=esquecido
-uso da API: 1476 tokens de entrada, 132 de saída
-Anne Clifford: nada no Wikisource (en) para 'The Diary of Lady Anne Clifford Knole 1616 1617'
-uso da API: 1483 tokens de entrada, 209 de saída
-Georg Christoph Lichtenberg: nada no Wikisource (de) para 'Lichtenberg Sudelbücher Bemerkungen vermischten Inhalts'
-uso da API: 1478 tokens de entrada, 108 de saída
-uso da API: 2116 tokens de entrada, 3349 de saída
-imagem: 1 (retrato do autor no Wikidata)
+2026-10-18T17:42:53.682600+00:00 categoria=pintura
+imagem: a própria pintura do post
+uso da API: 1502 tokens de entrada, 1010 de saída
