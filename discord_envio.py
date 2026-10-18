@@ -21,6 +21,8 @@ LIMITE_TEXTO = 2000
 LIMITE_ARQUIVO = 10 * 1024 * 1024      # 10 MB por arquivo no plano grátis
 SEM_SOM = 1 << 12                      # flag SUPPRESS_NOTIFICATIONS
 LETRAS = "ABCD"
+FORUM_SEM_TITULO = 220001              # canal Fórum exige título do post
+VERDE, VERMELHO, AMARELO, CINZA = 0x2ECC71, 0xE74C3C, 0xF1C40F, 0x95A5A6
 
 
 def webhooks():
@@ -61,6 +63,7 @@ def _pedacos(texto):
 
 
 def _post(url, payload, arquivos=()):
+    """Devolve (mensagem criada ou None, código de erro do Discord ou None)."""
     url = url + ("&" if "?" in url else "?") + "wait=true"
     if arquivos:
         fronteira = uuid.uuid4().hex
@@ -78,22 +81,32 @@ def _post(url, payload, arquivos=()):
         req = urllib.request.Request(url, data=corpo, method="POST",
                                      headers={"Content-Type": tipo, "User-Agent": "meus-bots (github actions)"})
         try:
-            urllib.request.urlopen(req, timeout=60).read()
-            return True
+            return json.loads(urllib.request.urlopen(req, timeout=60).read() or b"{}"), None
         except urllib.error.HTTPError as e:
+            corpo = e.read() or b"{}"
+            try:
+                erro = json.loads(corpo)
+            except ValueError:
+                erro = {}
             if e.code == 429 and tentativa < 3:
-                try:
-                    espera = float(json.loads(e.read() or b"{}").get("retry_after", 2))
-                except ValueError:
-                    espera = 2
-                time.sleep(min(espera, 30) + 0.5)
+                time.sleep(min(float(erro.get("retry_after", 2)), 30) + 0.5)
                 continue
-            print(f"Discord recusou ({e.code}): {e.read()[:300]!r}")
-            return False
+            if erro.get("code") != FORUM_SEM_TITULO:
+                print(f"Discord recusou ({e.code}): {corpo[:300]!r}")
+            return None, erro.get("code")
         except Exception as e:
             print(f"Discord falhou: {type(e).__name__}: {e}")
-            return False
-    return False
+            return None, None
+    return None, None
+
+
+def _cor(texto):
+    """Cor do cartão do #trade: verde = compra/ganho, vermelho = venda/perda, amarelo = misto/alerta."""
+    verde = len(re.findall(r"🟢|\bLONG\b", texto, re.I))
+    vermelho = len(re.findall(r"🔴|🛑|\bSHORT\b", texto, re.I))
+    if "⚠️" in texto or "🔒" in texto or (verde and vermelho):
+        return AMARELO
+    return VERDE if verde else VERMELHO if vermelho else CINZA
 
 
 def enviar(fonte, texto="", html=False, arquivos=(), extra=None, tipo=""):
@@ -133,14 +146,31 @@ def enviar(fonte, texto="", html=False, arquivos=(), extra=None, tipo=""):
     base = {"allowed_mentions": {"parse": []}}
     if extra.get("silencioso"):
         base["flags"] = SEM_SOM
-    pedacos = list(_pedacos(texto)) or [""]
-    ok = True
-    for i, pedaco in enumerate(pedacos):
-        ultimo = i == len(pedacos) - 1
-        anexos = caminhos[:10] if ultimo else []
-        if not pedaco and not anexos:
+    if fonte == "trade" and texto.strip() and len(texto) <= 4000:
+        titulo, _, resto = texto.strip().partition("\n")
+        cartao = {"color": _cor(texto)}
+        if len(titulo) <= 256:
+            cartao["title"] = titulo
+            if resto.strip():
+                cartao["description"] = resto.strip()
+        else:
+            cartao["description"] = texto.strip()
+        envios = [({**base, "embeds": [cartao]}, caminhos[:10])]
+    else:
+        pedacos = list(_pedacos(texto)) or [""]
+        envios = [({**base, "content": p}, caminhos[:10] if i == len(pedacos) - 1 else [])
+                  for i, p in enumerate(pedacos) if p or i == len(pedacos) - 1]
+    envios += [(base, caminhos[j:j + 10]) for j in range(10, len(caminhos), 10)]
+
+    ok, alvo = True, url
+    for payload, anexos in envios:
+        if not payload.get("content") and not payload.get("embeds") and not anexos:
             continue
-        ok = _post(url, {**base, "content": pedaco}, anexos) and ok
-    for j in range(10, len(caminhos), 10):          # mais de 10 anexos: mensagens extras
-        ok = _post(url, base, caminhos[j:j + 10]) and ok
+        msg, erro = _post(alvo, payload, anexos)
+        if erro == FORUM_SEM_TITULO:                 # #cultural virou Fórum: cada post é um tópico
+            titulo = re.sub(r"[*_`|#>]", "", texto.strip().split("\n")[0]).strip()[:100] or tipo or fonte
+            msg, erro = _post(alvo, {**payload, "thread_name": titulo}, anexos)
+            if msg and msg.get("channel_id"):
+                alvo = f"{url}?thread_id={msg['channel_id']}"
+        ok = ok and msg is not None
     return ok
