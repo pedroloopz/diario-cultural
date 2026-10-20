@@ -1,8 +1,3 @@
-2026-10-19T20:19:29.009079+00:00 categoria=diario
-uso da API: 1475 tokens de entrada, 209 de saída
-Frances Burney: nada no Wikisource (en) para 'Frances Burney letter to Esther Burney mastectomy 1812 Diary and Letters of Madame D'Arblay'
-uso da API: 1476 tokens de entrada, 118 de saída
-Anne Clifford: nada no Wikisource (en) para 'The Diary of Lady Anne Clifford Knole 1616'
-uso da API: 1478 tokens de entrada, 107 de saída
-uso da API: 2116 tokens de entrada, 2631 de saída
+2026-10-20T00:00:24.581235+00:00 categoria=teoria
+uso da API: 1546 tokens de entrada, 2278 de saída
 imagem: 1 (retrato do autor no Wikidata)
