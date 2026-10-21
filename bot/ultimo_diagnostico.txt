@@ -1,3 +1,4 @@
-2026-10-21T19:03:47.536035+00:00 categoria=musica
-uso da API: 1589 tokens de entrada, 1924 de saída
+2026-10-21T23:46:44.786238+00:00 categoria=diario
+uso da API: 1477 tokens de entrada, 282 de saída
+uso da API: 9017 tokens de entrada, 2405 de saída
 imagem: 1 (retrato do autor no Wikidata)
