@@ -1,3 +1,3 @@
-2026-10-22T14:52:59.506600+00:00 categoria=teoria
-uso da API: 1543 tokens de entrada, 1876 de saída
-imagem: 1 (retrato do autor no Wikidata)
+2026-10-22T19:00:07.116930+00:00 categoria=movimento
+imagem: a própria pintura do post
+uso da API: 1488 tokens de entrada, 1575 de saída
