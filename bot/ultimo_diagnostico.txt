@@ -1,3 +1,10 @@
-2026-10-23T14:41:18.088611+00:00 categoria=pintura
-imagem: a própria pintura do post
-uso da API: 1509 tokens de entrada, 1456 de saída
+2026-10-23T18:50:03.774186+00:00 categoria=poema
+uso da API: 1471 tokens de entrada, 386 de saída
+uso da API: 10394 tokens de entrada, 139 de saída
+Ernst Moritz Arndt: fonte 'Allgemeines Deutsches Kommersbuch/Inhalt alphabethisch' sem trecho literário utilizável
+uso da API: 1467 tokens de entrada, 261 de saída
+uso da API: 4833 tokens de entrada, 166 de saída
+Gregório de Matos: fonte 'Os Homens Bons' sem trecho literário utilizável
+uso da API: 1473 tokens de entrada, 153 de saída
+uso da API: 2926 tokens de entrada, 1908 de saída
+imagem: 1 (retrato do autor no Wikidata)
