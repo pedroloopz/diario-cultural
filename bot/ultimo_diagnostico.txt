@@ -1,7 +1,3 @@
-2026-10-24T13:51:10.123856+00:00 categoria=diario
-uso da API: 1477 tokens de entrada, 193 de saída
-uso da API: 6659 tokens de entrada, 2035 de saída
-imagem: 1 (retrato do autor no Wikidata)
-Samuel Pepys: marcas de vivência inventada (na madrugada); reescrita pedida
-uso da API: 2232 tokens de entrada, 1315 de saída
-Samuel Pepys: reescrito
+2026-10-24T17:45:25.836666+00:00 categoria=teoria
+uso da API: 1545 tokens de entrada, 1887 de saída
+imagem: 3 (busca genérica pelo tema)
