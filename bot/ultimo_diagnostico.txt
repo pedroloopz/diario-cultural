@@ -1,3 +1,3 @@
-2026-10-24T17:45:25.836666+00:00 categoria=teoria
-uso da API: 1545 tokens de entrada, 1887 de saída
-imagem: 3 (busca genérica pelo tema)
+2026-10-24T22:46:09.292616+00:00 categoria=movimento
+imagem: a própria pintura do post
+uso da API: 1491 tokens de entrada, 1481 de saída
