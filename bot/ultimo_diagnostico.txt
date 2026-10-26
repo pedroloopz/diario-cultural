@@ -1,3 +1,7 @@
-2026-10-26T16:31:20.907145+00:00 categoria=musica
-uso da API: 1578 tokens de entrada, 1937 de saída
+2026-10-26T20:15:23.796081+00:00 categoria=diario
+uso da API: 1477 tokens de entrada, 121 de saída
+uso da API: 6659 tokens de entrada, 1760 de saída
 imagem: 1 (retrato do autor no Wikidata)
+Samuel Pepys: marcas de vivência inventada (de madrugada); reescrita pedida
+uso da API: 2077 tokens de entrada, 1088 de saída
+Samuel Pepys: reescrito
