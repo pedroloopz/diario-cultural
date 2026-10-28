@@ -1,3 +1,4 @@
-2026-10-28T00:07:34.108900+00:00 categoria=pintura
-imagem: a própria pintura do post
-uso da API: 1513 tokens de entrada, 1683 de saída
+2026-10-28T16:27:09.475350+00:00 categoria=poema
+uso da API: 1468 tokens de entrada, 197 de saída
+uso da API: 2833 tokens de entrada, 2265 de saída
+imagem: 3 (busca genérica pelo tema)
