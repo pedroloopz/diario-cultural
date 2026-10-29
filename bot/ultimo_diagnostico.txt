@@ -1,6 +1,3 @@
-2026-10-29T00:32:19.291648+00:00 categoria=diario
-uso da API: 1475 tokens de entrada, 277 de saída
-Frances Burney: nada no Wikisource (en) para 'Diary and Letters of Madame D'Arblay Burney Kew Gardens King pursued'
-uso da API: 1475 tokens de entrada, 136 de saída
-uso da API: 3918 tokens de entrada, 2390 de saída
+2026-10-29T16:43:48.095002+00:00 categoria=teoria
+uso da API: 1543 tokens de entrada, 1872 de saída
 imagem: 1 (retrato do autor no Wikidata)
