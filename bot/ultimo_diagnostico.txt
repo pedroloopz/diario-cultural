@@ -1,3 +1,3 @@
-2026-10-29T20:08:17.849486+00:00 categoria=movimento
+2026-10-30T00:29:11.508231+00:00 categoria=esquecido
 imagem: a própria pintura do post
-uso da API: 1487 tokens de entrada, 1565 de saída
+uso da API: 1498 tokens de entrada, 1225 de saída
