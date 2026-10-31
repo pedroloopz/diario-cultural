@@ -1,7 +1,6 @@
-2026-10-30T19:49:14.906025+00:00 categoria=poema
-uso da API: 1463 tokens de entrada, 186 de saída
-uso da API: 10317 tokens de entrada, 251 de saída
-Hafez: fonte 'دیوان حافظ' sem trecho literário utilizável
-uso da API: 1473 tokens de entrada, 140 de saída
-uso da API: 2926 tokens de entrada, 1775 de saída
+2026-10-31T00:13:21.705441+00:00 categoria=musica
+uso da API: 1583 tokens de entrada, 1568 de saída
 imagem: 1 (retrato do autor no Wikidata)
+Carl Maria von Weber: marcas de vivência inventada (um amigo); reescrita pedida
+uso da API: 1952 tokens de entrada, 931 de saída
+Carl Maria von Weber: reescrito
