@@ -1,6 +1,4 @@
-2026-10-31T00:13:21.705441+00:00 categoria=musica
-uso da API: 1583 tokens de entrada, 1568 de saída
+2026-10-31T15:37:09.053641+00:00 categoria=diario
+uso da API: 1477 tokens de entrada, 179 de saída
+uso da API: 6659 tokens de entrada, 1963 de saída
 imagem: 1 (retrato do autor no Wikidata)
-Carl Maria von Weber: marcas de vivência inventada (um amigo); reescrita pedida
-uso da API: 1952 tokens de entrada, 931 de saída
-Carl Maria von Weber: reescrito
