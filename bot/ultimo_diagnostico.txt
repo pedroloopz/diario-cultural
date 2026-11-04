@@ -1,6 +1,3 @@
-2026-11-04T17:47:18.521019+00:00 categoria=poema
-uso da API: 1468 tokens de entrada, 247 de saída
-Izumi Shikibu: nada no Wikisource (ja) para '小倉百人一首 和泉式部 あらざらむこの世のほかの思ひ出に'
-uso da API: 1468 tokens de entrada, 176 de saída
-uso da API: 2465 tokens de entrada, 1834 de saída
+2026-11-04T21:00:37.092060+00:00 categoria=musica
+uso da API: 1589 tokens de entrada, 2050 de saída
 imagem: 1 (retrato do autor no Wikidata)
