@@ -1,3 +1,4 @@
-2026-11-06T17:12:30.881123+00:00 categoria=pintura
-imagem: a própria pintura do post
-uso da API: 1502 tokens de entrada, 1631 de saída
+2026-11-06T20:40:19.423464+00:00 categoria=poema
+uso da API: 1463 tokens de entrada, 162 de saída
+uso da API: 8943 tokens de entrada, 2275 de saída
+imagem: 1 (retrato do autor no Wikidata)
